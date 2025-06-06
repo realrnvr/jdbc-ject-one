@@ -34,9 +34,7 @@ public class Main {
                     case 1: {
                         // register
                         User user = process.register();
-                        if(user == null) {
-                            break;
-                        }
+                        if(user == null) break;
 
                         // do something
                         Home home = new Home(user, connection, sc);
@@ -47,9 +45,7 @@ public class Main {
                     case 2: {
                         // login
                         User user = process.login();
-                        if(user == null) {
-                            break;
-                        }
+                        if(user == null) break;
 
                         // do something
                         Home home = new Home(user, connection, sc);

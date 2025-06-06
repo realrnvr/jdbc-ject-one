@@ -29,6 +29,8 @@ public class Home {
         if(isAccountExists()) {
             accountScreen();
             // give user option to go to transaction page
+            Transaction transaction = new Transaction(this.account, this.SC, this.CONNECTION, this.USER);
+            transaction.screen();
         } else {
             noAccountScreen();
         }
@@ -49,16 +51,15 @@ public class Home {
                 case 1: {
                     // create new account
                     this.account = createAccount.newAccount();
-                    if(this.account == null) {
-                        break;
-                    }
+                    if(this.account == null) break;
 
                     // do something
                     accountScreen();
                     isSystemRunning = false;
 
                     // send user to transaction page
-
+                    Transaction transaction = new Transaction(this.account, this.SC, this.CONNECTION, this.USER);
+                    transaction.screen();
                     break;
                 }
                 case 2: {

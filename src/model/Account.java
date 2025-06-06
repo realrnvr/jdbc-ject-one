@@ -9,7 +9,6 @@ package model;
 //        | email        | varchar(255)  | YES  | MUL | NULL    |                |
 //        +--------------+---------------+------+-----+---------+----------------+
 
-
 public class Account {
     public int accountNumber;
     public double balance;
