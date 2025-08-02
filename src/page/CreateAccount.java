@@ -2,6 +2,7 @@ package page;
 
 import model.Account;
 import model.User;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,23 +26,36 @@ public class CreateAccount {
         System.out.println("Enter Initial Amount:");
         double balance = SC.nextDouble();
         SC.nextLine();
-        System.out.println("Enter Security Pin:");
-        String securityPin = SC.nextLine();
 
-        String createQuery = "insert into account(balance, security_pin, email) values(?, ?, ?);";
+        String securityPin;
+        while (true) {
+            System.out.println("Enter Security Pin (4-6 digits recommended):");
+            securityPin = SC.nextLine().trim();
+
+            if (!securityPin.matches("\\d{4,6}")) {
+                System.out.println("Security PIN must be 4-6 digits. Please try again.");
+                continue;
+            }
+            break;
+        }
+
+        // Hash the security PIN using BCrypt
+        String hashedPin = BCrypt.hashpw(securityPin, BCrypt.gensalt(12));
+
+        String createQuery = "INSERT INTO account(balance, security_pin, email) VALUES(?, ?, ?);";
         PreparedStatement createPreparedStatement = CONNECTION.prepareStatement(createQuery);
         createPreparedStatement.setDouble(1, balance);
-        createPreparedStatement.setString(2, securityPin);
+        createPreparedStatement.setString(2, hashedPin);
         createPreparedStatement.setString(3, USER.email);
 
         int createAffect = createPreparedStatement.executeUpdate();
         createPreparedStatement.close();
-        if(createAffect <= 0) {
+        if (createAffect <= 0) {
             System.out.println("Error creating bank account");
             return null;
         }
 
-        String getQuery = "select acc_number, balance from account where email = ?;";
+        String getQuery = "SELECT acc_number, balance FROM account WHERE email = ?;";
         PreparedStatement getPreparedStatement = CONNECTION.prepareStatement(getQuery);
         getPreparedStatement.setString(1, USER.email);
 
@@ -50,7 +64,7 @@ public class CreateAccount {
         int storedAccountNumber = 0;
         double storedBalance = 0;
 
-        if(getRes.next()) {
+        if (getRes.next()) {
             storedAccountNumber = getRes.getInt("acc_number");
             storedBalance = getRes.getDouble("balance");
         } else {

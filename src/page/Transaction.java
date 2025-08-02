@@ -2,7 +2,7 @@ package page;
 
 import model.Account;
 import model.User;
-
+import util.HashUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,10 +10,10 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Transaction {
-    private final Account ACCOUNT;
+    private Account ACCOUNT;
     private final Scanner SC;
     private final Connection CONNECTION;
-    private final User USER;
+    private User USER;
 
     public Transaction(Account account, Scanner sc, Connection connection, User user) {
         this.ACCOUNT = account;
@@ -31,7 +31,7 @@ public class Transaction {
             System.out.println("2. Credit Money");
             System.out.println("3. Transfer Money");
             System.out.println("4. Check Balance");
-            System.out.println("5. Go Back");
+            System.out.println("5. Log out");
             System.out.println("Enter a choice:");
             int choice = this.SC.nextInt();
             this.SC.nextLine();
@@ -59,6 +59,9 @@ public class Transaction {
                 }
                 case 5: {
                     isSystemRunning = false;
+                    this.ACCOUNT = null;
+                    this.USER = null;
+                    System.gc();
                     System.out.println("...");
                     break;
                 }
@@ -148,22 +151,26 @@ public class Transaction {
         System.out.println("Enter the security pin:");
         String enteredSecurityPin = this.SC.nextLine();
 
-        String query = "select security_pin from account where acc_number = ?;";
+        String query = "SELECT security_pin FROM account WHERE acc_number = ?;";
         PreparedStatement preparedStatement = this.CONNECTION.prepareStatement(query);
         preparedStatement.setInt(1, this.ACCOUNT.accountNumber);
 
         ResultSet res = preparedStatement.executeQuery();
-        String securityPin = "";
+        String storedHashedPin = "";
 
-        if(res.next()) {
-            securityPin = res.getString("security_pin");
+        if (res.next()) {
+            storedHashedPin = res.getString("security_pin");
             System.out.println("Security pin fetched!");
         } else {
             System.out.println("Error fetching security pin!");
             return false;
         }
 
-        if(!enteredSecurityPin.equals(securityPin)) {
+        preparedStatement.close();
+        res.close();
+
+        // Use HashUtil to check hashed PIN
+        if (!HashUtil.check(enteredSecurityPin, storedHashedPin)) {
             System.out.println("Entered pin is incorrect!");
             return false;
         }
@@ -171,6 +178,7 @@ public class Transaction {
         System.out.println("Entered pin is correct!");
         return true;
     }
+
 
     private void updateState() throws SQLException {
         String query = "select balance from account where acc_number = ? and email = ?;";

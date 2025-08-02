@@ -1,11 +1,9 @@
 import auth.Process;
-import model.User;
-import page.Home;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Scanner;
-
+import model.User;
+import page.Home;
 import static util.Config.get;
 
 public class Main {
@@ -21,7 +19,7 @@ public class Main {
 
             boolean isSystemRunning = true;
 
-            while(isSystemRunning) {
+            while (isSystemRunning) {
                 System.out.println("Welcome to Banking System:");
                 System.out.println("1. Register");
                 System.out.println("2. Login");
@@ -30,37 +28,35 @@ public class Main {
                 int choice = sc.nextInt();
                 sc.nextLine();
 
-                switch(choice) {
-                    case 1: {
+                switch (choice) {
+                    case 1 -> {
                         // register
                         User user = process.register();
-                        if(user == null) break;
+                        if (user == null)
+                            break;
 
                         // do something
                         Home home = new Home(user, connection, sc);
                         home.screen();
 
-                        break;
                     }
-                    case 2: {
+                    case 2 -> {
                         // login
                         User user = process.login();
-                        if(user == null) break;
+                        if (user == null)
+                            break;
 
                         // do something
                         Home home = new Home(user, connection, sc);
                         home.screen();
 
-                        break;
                     }
-                    case 3: {
+                    case 3 -> {
                         isSystemRunning = false;
                         System.out.println("Exiting...");
-                        break;
                     }
-                    default: {
+                    default -> {
                         System.out.println("Please select a valid option!");
-                        break;
                     }
                 }
             }

@@ -5,8 +5,8 @@ package model;
 //        +--------------+---------------+------+-----+---------+----------------+
 //        | acc_number   | int           | NO   | PRI | NULL    | auto_increment |
 //        | balance      | decimal(10,2) | NO   |     | NULL    |                |
-//        | security_pin | varchar(4)    | NO   |     | NULL    |                |
-//        | email        | varchar(255)  | YES  | MUL | NULL    |                |
+//        | security_pin | varchar(60)   | NO   |     | NULL    |                |
+//        | email        | varchar(255)  | NO   | MUL | NULL    |                |
 //        +--------------+---------------+------+-----+---------+----------------+
 
 public class Account {
